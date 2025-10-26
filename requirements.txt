@@ -1,0 +1,5 @@
+discord.py==2.3.2
+python-dotenv==1.0.1
+requests==2.32.3
+orjson==3.10.7
+pip install gspread google-auth apscheduler

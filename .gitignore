@@ -1,0 +1,28 @@
+# 環境設定
+.env
+*.env
+credentials.json
+.env .example2
+
+# 履歴・出力
+history/
+__pycache__/
+*.log
+*.tmp
+*.csv
+*.xlsx
+*.json
+*.zip
+
+# Python環境
+venv/
+.envrc
+.idea/
+.vscode/
+
+# OSファイル
+.DS_Store
+Thumbs.db
+
+platform-tools/.env
+.env
