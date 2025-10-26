@@ -31,7 +31,11 @@ def _parse_hhmm(value: str, default: str) -> tuple[int,int]:
         return dh, dm
 
 async def post_daily_digest(bot: discord.Client):
-    records = fetch_yesterday_records()
+    try:
+        records = await asyncio.to_thread(fetch_yesterday_records)
+    except Exception as e:
+        log.warning(f"[digest] sheets fetch failed: {e}")
+        return
     if not records:
         log.info("[digest] no records for yesterday -> skip")
         return
