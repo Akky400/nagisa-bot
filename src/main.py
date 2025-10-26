@@ -5,6 +5,8 @@ import discord
 from src.config import load_settings
 from src.discord_bot import NagisaDiscordBot
 from src.digest_job import setup_scheduler
+from dotenv import load_dotenv
+load_dotenv()  # .env を環境変数に流し込む
 
 def setup_logging():
     root = logging.getLogger()

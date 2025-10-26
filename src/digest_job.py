@@ -116,6 +116,7 @@ async def ensure_scheduler_started(bot: discord.Client):
 
     sched.start()
     bot._nagisa_sched = sched
+    sched.print_jobs()
 
 def setup_scheduler(bot: discord.Client):
     sched = AsyncIOScheduler(timezone=JST)
