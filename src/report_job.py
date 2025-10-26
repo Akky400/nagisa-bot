@@ -7,7 +7,7 @@ import os
 from typing import List
 import re
 from .openai_client import chat_complete
-from .persona import SYSTEM_PROMPT
+from .persona import EDITOR_SYSTEM_PROMPT as SYSTEM_PROMPT
 
 log = logging.getLogger(__name__)
 JST = timezone(timedelta(hours=9))

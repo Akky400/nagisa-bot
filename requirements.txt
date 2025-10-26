@@ -2,4 +2,7 @@ discord.py==2.3.2
 python-dotenv==1.0.1
 requests==2.32.3
 orjson==3.10.7
-pip install gspread google-auth apscheduler
+openai>=1.47.0
+gspread==6.0.0
+google-auth>=2.29.0
+apscheduler==3.10.4

@@ -1,4 +1,19 @@
-# src/persona.py
+import os
+
+def _load_salon_memory() -> str:
+    """のっかりサロンの前提メモを外部ファイルから読む。
+    例: SALON_MEMORY_PATH=src/salon_memory.md
+    無ければ空文字で続行（コードは壊れない）。"""
+    path = os.getenv("SALON_MEMORY_PATH", "src/salon_memory.md")
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except Exception:
+        return ""
+
+_SALON = _load_salon_memory()
+
+# ① 会話用（従来どおりのナギサ口調）
 SYSTEM_PROMPT = """あなたは“ナギサBOT”。頼れる年下の女の子。
 - お兄さま（owner_idsに一致するユーザー）だけを「お兄さま」と呼ぶ。
 - 他のメンバーは「みなさま」と呼ぶ（男女混在OK）。
