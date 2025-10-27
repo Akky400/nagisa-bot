@@ -125,6 +125,7 @@ class NagisaDiscordBot(discord.Client):
         store_chain = store_chain_from_comment or store_chain_from_channel
         price_candidate = extract_price_candidate_from_text(combined)
 
+        log.info(f"[bundle] ids: asin={asin} jan={jan} price={price_candidate}")
         title, amazon_price = None, None
         if asin or jan:
             try:
@@ -136,6 +137,9 @@ class NagisaDiscordBot(discord.Client):
                 log.exception(f"Keepa fetch failed (bundle) for ASIN={asin} JAN={jan}: {e}")
 
         if not (asin or jan):
+            log.info(f"[bundle] skip: no ASIN/JAN found (price={price_candidate})")
+            return
+        # 返信（最優先：Sheetsが遅くても先に返す）
         lines = ["🧾 **ナギサが調べたよ！**"]
         if title: lines.append(f"・商品名：{title}")
         if asin: lines.append(f"・ASIN：`{asin}`")
