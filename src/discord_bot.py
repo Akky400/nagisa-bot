@@ -136,24 +136,6 @@ class NagisaDiscordBot(discord.Client):
                 log.exception(f"Keepa fetch failed (bundle) for ASIN={asin} JAN={jan}: {e}")
 
         if not (asin or jan):
-            log.info(f"[bundle] skip: no ASIN/JAN found (price={price_candidate})")
-            return
-        try:
-            append_product({
-                "asin": asin,
-                "jan": jan,
-                "title": title,
-                "amazon_price": amazon_price,
-                "store_chain": store_chain,
-                "store_branch": store_branch,
-                "buy_price": price_candidate,
-                "user": f"{b.messages[0].author.name}#{b.messages[0].author.discriminator}",
-                "channel": channel_obj.name if channel_obj else "",
-            })
-        except Exception as e:
-            log.exception(f"append_product (bundle) failed: {e}")
-
-        # 返信（最後のメッセージに返す）
         lines = ["🧾 **ナギサが調べたよ！**"]
         if title: lines.append(f"・商品名：{title}")
         if asin: lines.append(f"・ASIN：`{asin}`")
@@ -167,3 +149,31 @@ class NagisaDiscordBot(discord.Client):
             await b.messages[-1].reply(reply, mention_author=False)
         except Exception as e:
             log.warning(f"reply failed (bundle): {e}")
+
+        # Sheets 書き込みはバックグラウンドで実行（ボットを止めない）
+        payload = {
+            "asin": asin,
+            "jan": jan,
+            "title": title,
+            "amazon_price": amazon_price,
+            "store_chain": store_chain,
+            "store_branch": store_branch,
+            "buy_price": price_candidate,
+            "user": f"{b.messages[0].author.name}#{b.messages[0].author.discriminator}",
+            "channel": channel_obj.name if channel_obj else "",
+        }
+        asyncio.create_task(self._append_to_sheets(payload))
+
+    async def _append_to_sheets(self, payload: dict):
+        """Sheets への書き込みをイベントループから切り離して実行。失敗はログのみ。"""
+        if os.getenv("NAGISA_DISABLE_SHEETS") == "1":
+            log.info("[bundle] sheets disabled; skip append")
+            return
+        try:
+            t0 = time.time()
+            await asyncio.wait_for(asyncio.to_thread(append_product, payload), timeout=12)
+            log.info(f"[bundle] sheets appended in {time.time()-t0:.2f}s")
+        except asyncio.TimeoutError:
+            log.warning("[bundle] Sheets append timed out (background)")
+        except Exception as e:
+            log.exception(f"[bundle] append_product failed (background): {e}")
